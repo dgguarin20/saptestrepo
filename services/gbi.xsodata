@@ -1,0 +1,47 @@
+service {
+ "gbi-student-549.gbi.data::GBI_549.MASTERDATA.CUSTOMERS" as "Customers"
+ navigates("compradores" as "Orders");
+ 
+  "gbi-student-549.gbi.data::GBI_549.MASTERDATA.PRODUCTS" as "Products"
+  navigates("productos" as "Inventory");
+  
+   
+ "gbi-student-549.gbi.data::GBI_549.MASTERDATA.PRODUCT_CATEGORIES" as "ProductCategories"
+ navigates("CategoriesProducts" as "Products");
+ 
+ "gbi-student-549.gbi.data::GBI_549.SALES.SALES_ORDERS" as "SalesOrd"
+  navigates ("ventas" as "Details");
+ "gbi-student-549.gbi.data::GBI_549.SALES.SALES_ORDER_DETAILS" as "SalesOrdDet";
+ "gbi-student-549.gbi.data::GBI_549.LOGISTICS.INVENTORY" as "Inventor";
+
+ "gbi-student-549.gbi.data::GBI_549.MASTERDATA.CustomerSales" as "CustomerSales"
+ key generate local "GenID";
+  "gbi-student-549.gbi.data::GBI_549.LOGISTICS.InventoryQuantity" as "InventoryQuantity"
+ key generate local "GenID";
+
+"gbi-student-549.gbi.data::GBI_549.MASTERDATA.SALES_ORGS" as "SalesOrg"
+ navigates ("SOrg_Customers_Association" as "SOrgCustomers");
+ 
+"gbi-student-549.gbi.data::GBI_549.SALES.SALES_ORDERS" as "SalesRevenue"
+ key generate local "GenID" 
+ aggregates always (SUM of "GrossAmount.Amount");
+ 
+ "gbi-student-549.gbi.data::GBI_549.LOGISTICS.INVENTORY" as "inventoryquantity"
+ key generate local "GenID" 
+ aggregates always (SUM of "Quantity");
+ 
+association "productos" principal "Products"("ID") multiplicity "1"
+dependent "Inventor"("ProductID") multiplicity "*";
+association "productos_categoricos" principal "ProductCat"("ProductCategory") multiplicity "1"
+dependent "Products"("ID") multiplicity "*";
+
+association "ventas" principal "SalesOrd"("ID.OrderID") multiplicity "1"
+dependent "SalesOrdDet"("OrderID") multiplicity "*";
+association "compradores" principal "Customers"("SalesOrgID") multiplicity "1"
+dependent "SalesOrd"("ID.OrderID") multiplicity "*";
+association "SOrg_Customers_Association" principal "SalesOrg"("ID") multiplicity "1"
+dependent "Customers"("SalesOrgID") multiplicity "*";
+
+
+
+}
